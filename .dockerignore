@@ -1,0 +1,11 @@
+**/.env
+**/.git
+**/.gitignore
+**/.settings
+**/.vs
+**/.vscode
+**/docker-compose
+**/Dockerfile*
+**/node_modules
+**/obj
+README.md

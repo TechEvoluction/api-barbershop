@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/CrossCutting/">
+    <Project Path="src/Barbershop.Shareable/Barbershop.Shareable.csproj" />
+  </Folder>
+  <Folder Name="/Domain/">
+    <Project Path="src/Barbershop.Domain/Barbershop.Domain.csproj" />
+  </Folder>
+  <Folder Name="/Infra/">
+    <Project Path="src/Barbershop.Data/Barbershop.Data.csproj" />
+    <Project Path="src/Barbershop.Ioc/Barbershop.Ioc.csproj" />
+  </Folder>
+  <Folder Name="/Presentation/">
+    <Project Path="src/Barbershop.Api/Barbershop.Api.csproj" />
+  </Folder>
+</Solution>
