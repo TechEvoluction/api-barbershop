@@ -6,4 +6,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Barbershop.Data\Barbershop.Data.csproj" />
+    <ProjectReference Include="..\Barbershop.Domain\Barbershop.Domain.csproj" />
+    <ProjectReference Include="..\Barbershop.Shareable\Barbershop.Shareable.csproj" />
+  </ItemGroup>
+
 </Project>

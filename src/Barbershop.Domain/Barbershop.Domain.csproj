@@ -6,4 +6,12 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Barbershop.Shareable\Barbershop.Shareable.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Handle\" />
+  </ItemGroup>
+
 </Project>
