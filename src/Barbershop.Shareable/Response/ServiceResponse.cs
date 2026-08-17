@@ -9,4 +9,5 @@ public record ServiceResponse(
     string DurationInMinutesDescription,
     decimal? PromotionalPrice,
     DateTime? PromotionalPriceEndDate,
-    bool IsActive);
+    bool IsActive,
+    byte[]? Image);

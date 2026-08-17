@@ -13,14 +13,17 @@ public class ServiceEntity : BaseEntity
     public bool IsActive { get; private set; } = false;
     public decimal? PromotionalPrice { get; private set; }
     public DateTime? PromotionalPriceEndDate { get; private set; }
-    // Salvar fotos ???
+    public byte[]? Image { get; private set; }
+    public decimal DiscountPercentage => PromotionalPrice.HasValue ? (Price - PromotionalPrice.Value) / Price * 100 : 0m;
+    public bool IsPromotional => PromotionalPrice.HasValue && PromotionalPriceEndDate!.Value > DateTime.UtcNow;
 
-    private ServiceEntity(string name, string description, decimal price, TimeInMinutes duration)
+    private ServiceEntity(string name, string description, decimal price, TimeInMinutes duration, byte[]? image)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Name cannot be null or empty.");
 
-        if (string.IsNullOrWhiteSpace(description))
+        // REGRA DE NEGÓCIO: Validar com Jonatas
+        if (string.IsNullOrWhiteSpace(description) || description.Length > 500)
             throw new ArgumentException("Description cannot be null or empty.");
 
         if (price <= 0)
@@ -30,10 +33,21 @@ public class ServiceEntity : BaseEntity
         Description = description;
         Price = price;
         Duration = duration;
+        Image = image;
     }
 
-    public static ServiceEntity CreateService(CreateServiceRequest request)
-        => new(request.Name, request.Description, request.Price, request.Duration);
+    public static ServiceEntity Create(CreateServiceRequest request)
+        => new(request.Name, request.Description, request.Price, request.Duration, request.Image);
+
+    public ServiceEntity Update(UpdateServiceRequest request)
+    {
+        Name = request.Name;
+        Description = request.Description;
+        Price = request.Price;
+        Duration = request.Duration;
+        Image = request.Image;
+        return this;
+    }
 
     public void PutServiceOnSale(decimal promotionalPrice, DateTime? promotionalPriceEndDate)
     {
@@ -41,9 +55,10 @@ public class ServiceEntity : BaseEntity
             throw new NegativePriceException();
 
         if (promotionalPrice >= Price)
-            throw new NegativePriceException(message: "Preço promocional deve ser inferior ao preço atual do serviço.");
+            throw new NegativePriceException(message: "Preço promocional deve ser inferior ao preço atual do serviço.", httpStatusCode: 422);
 
         // REGRA DE NEGÓCIO: Validar com Jonatas
+        // REGRA DE NEGÓCIO: Limitar uma data máxima para o fim da promoção ?
         promotionalPriceEndDate ??= DateTime.UtcNow.AddDays(15);
 
         PromotionalPrice = promotionalPrice;
@@ -51,4 +66,10 @@ public class ServiceEntity : BaseEntity
     }
 
     public void ActivateService() => IsActive = true;
+
+    public void RemoveServiceFromSale()
+    {
+        PromotionalPrice = null;
+        PromotionalPriceEndDate = null;
+    }
 }
