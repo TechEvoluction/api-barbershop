@@ -6,5 +6,5 @@ namespace Barbershop.Shareable.Request;
 
 public record ServiceOnSaleRequest(
     [property: JsonIgnore] Guid Id,
-    decimal promotionalPrice,
-    DateTime? promotionalPriceEndDate) : IRequest<Result>;
+    decimal PromotionalPrice,
+    DateTime? PromotionalPriceEndDate) : IRequest<Result>;

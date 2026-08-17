@@ -2,6 +2,9 @@
 using Barbershop.Data.Repository;
 using Barbershop.Domain;
 using Barbershop.Domain.Contract.Repository;
+using Barbershop.Shareable;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,10 +16,11 @@ public static class ApplicationConfiguration
 {
     public static void Configure(this IServiceCollection services, IConfiguration configuration)
     {
-        services.ConfigureDbContext(configuration);
         services.ConfigureMediatR();
-        services.ConfigurarExceptionHandler();
         services.ConfigureHttpOptions();
+        services.ConfigurarExceptionHandler();
+        services.ConfigurarFluentValidation();
+        services.ConfigureDbContext(configuration);
     }
 
     private static void ConfigureMediatR(this IServiceCollection services)
@@ -44,6 +48,12 @@ public static class ApplicationConfiguration
         {
             options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
         });
+
+    internal static void ConfigurarFluentValidation(this IServiceCollection services)
+    {
+        services.AddFluentValidationAutoValidation();
+        services.AddValidatorsFromAssembly(typeof(ISharableEntryPoint).Assembly, includeInternalTypes: true);
+    }
 
     // Add CORS
 }

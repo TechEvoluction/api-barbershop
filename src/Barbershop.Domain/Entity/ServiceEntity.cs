@@ -16,13 +16,13 @@ public class ServiceEntity : BaseEntity
     public byte[]? Image { get; private set; }
     public decimal DiscountPercentage => PromotionalPrice.HasValue ? (Price - PromotionalPrice.Value) / Price * 100 : 0m;
     public bool IsPromotional => PromotionalPrice.HasValue && PromotionalPriceEndDate!.Value > DateTime.UtcNow;
+    public DateTime PromotionalDeadline { get; } = DateTime.UtcNow.AddHours(-3).AddDays(90);
 
     private ServiceEntity(string name, string description, decimal price, TimeInMinutes duration, byte[]? image)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Name cannot be null or empty.");
 
-        // REGRA DE NEGÓCIO: Validar com Jonatas
         if (string.IsNullOrWhiteSpace(description) || description.Length > 500)
             throw new ArgumentException("Description cannot be null or empty.");
 
@@ -49,13 +49,19 @@ public class ServiceEntity : BaseEntity
         return this;
     }
 
-    public void PutServiceOnSale(decimal promotionalPrice, DateTime? promotionalPriceEndDate)
+    public void PutServiceOnSale(ServiceOnSaleRequest request)
     {
+        var promotionalPrice = request.PromotionalPrice;
+        var promotionalPriceEndDate = request.PromotionalPriceEndDate;
+
         if (promotionalPrice <= 0)
             throw new NegativePriceException();
 
         if (promotionalPrice >= Price)
             throw new NegativePriceException(message: "Preço promocional deve ser inferior ao preço atual do serviço.", httpStatusCode: 422);
+
+        if (promotionalPriceEndDate.HasValue && promotionalPriceEndDate.Value > PromotionalDeadline)
+            throw new PromotionalEndDateException(PromotionalDeadline);
 
         // REGRA DE NEGÓCIO: Validar com Jonatas
         // REGRA DE NEGÓCIO: Limitar uma data máxima para o fim da promoção ?
@@ -67,9 +73,8 @@ public class ServiceEntity : BaseEntity
 
     public void ActivateService() => IsActive = true;
 
+    public void DeactivateService() => IsActive = false;
+
     public void RemoveServiceFromSale()
-    {
-        PromotionalPrice = null;
-        PromotionalPriceEndDate = null;
-    }
+        => (PromotionalPrice, PromotionalPriceEndDate) = (null, null);
 }

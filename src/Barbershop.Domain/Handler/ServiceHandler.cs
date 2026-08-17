@@ -7,14 +7,16 @@ using Barbershop.Shareable.Response;
 using MediatR;
 using OperationResult;
 
-namespace Barbershop.Domain.Handle;
+namespace Barbershop.Domain.Handler;
 
 internal class ServiceHandler(IServiceRepository serviceRepository, IUnitOfWork unitOfWork)
     : IRequestHandler<CreateServiceRequest, Result>,
         IRequestHandler<UpdateServiceRequest, Result<ServiceResponse>>,
         IRequestHandler<GetServiceRequest, Result<ServiceResponse>>,
         IRequestHandler<GetServicesRequest, Result<ServiceResponse[]>>,
-        IRequestHandler<ActivateServiceRequest, Result>
+        IRequestHandler<ActivateServiceRequest, Result>,
+        IRequestHandler<DeactivateServiceRequest, Result>,
+        IRequestHandler<ServiceOnSaleRequest, Result>
 {
     public async Task<Result> Handle(CreateServiceRequest request, CancellationToken cancellationToken)
     {
@@ -41,6 +43,8 @@ internal class ServiceHandler(IServiceRepository serviceRepository, IUnitOfWork 
             service.RemoveServiceFromSale();
 
         service.Update(request);
+
+        serviceRepository.Update(service);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
@@ -72,6 +76,43 @@ internal class ServiceHandler(IServiceRepository serviceRepository, IUnitOfWork 
             return new NotFoundException("Serviço");
 
         service.ActivateService();
+
+        serviceRepository.Update(service);
+
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return Result.Success();
+    }
+
+    public async Task<Result> Handle(DeactivateServiceRequest request, CancellationToken cancellationToken)
+    {
+        var service = await serviceRepository.GetByIdAsync(request.Id, cancellationToken);
+
+        if (service is null)
+            return new NotFoundException("Serviço");
+
+        service.DeactivateService();
+
+        serviceRepository.Update(service);
+
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return Result.Success();
+    }
+
+    public async Task<Result> Handle(ServiceOnSaleRequest request, CancellationToken cancellationToken)
+    {
+        var service = await serviceRepository.GetByIdAsync(request.Id, cancellationToken);
+
+        if (service is null)
+            return new NotFoundException("Serviço");
+
+        if (service.IsActive is false)
+            return new AppException("O serviço não pode ser colocado em promoção antes da ativação", "INACTIVE_SERVICE");
+
+        service.PutServiceOnSale(request);
+
+        serviceRepository.Update(service);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
 

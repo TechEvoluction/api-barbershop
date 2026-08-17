@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Barbershop.Api.Endpoints;
 
-internal static class ServiceEndpoints
+internal static class ServicesEndpoints
 {
     public static void MapServiceEndpoint(this IEndpointRouteBuilder app)
     {
@@ -19,9 +19,13 @@ internal static class ServiceEndpoints
             .Produces(StatusCodes.Status200OK)
             .WithSummary("Realiza a atualização de um serviço");
 
-        api.MapPost("activate", async (IMediator mediator, ActivateServiceRequest req) => await mediator.SendCommand(req))
+        api.MapPost("{id:guid}/activate", async (IMediator mediator, Guid Id) => await mediator.SendCommand(new ActivateServiceRequest(Id)))
             .Produces(StatusCodes.Status200OK)
-            .WithSummary("Realiza a ativação de serviços");
+            .WithSummary("Realiza a ativação de um serviços");
+
+        api.MapPost("{id:guid}/deactivate", async (IMediator mediator, Guid Id) => await mediator.SendCommand(new DeactivateServiceRequest(Id)))
+            .Produces(StatusCodes.Status200OK)
+            .WithSummary("Realiza a desativação de um serviços");
 
         api.MapGet("{id:guid}", async (IMediator mediator, Guid id) => await mediator.SendCommand(new GetServiceRequest(id)))
             .Produces<ServiceResponse>(StatusCodes.Status200OK)
@@ -32,7 +36,7 @@ internal static class ServiceEndpoints
             .WithSummary("Obtém todos os serviços");
 
         api.MapPost("{id:guid}/promotion", async (IMediator mediator, Guid Id, ServiceOnSaleRequest req) => await mediator.SendCommand(req with { Id = Id }))
-            .Produces<ServiceResponse[]>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status200OK)
             .WithSummary("Registra um serviço em promoção");
     }
 }
