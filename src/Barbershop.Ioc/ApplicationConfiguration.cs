@@ -49,6 +49,7 @@ public static class ApplicationConfiguration
             options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
         });
 
+    // TODO: As validações não estão sendo realizadas.
     internal static void ConfigurarFluentValidation(this IServiceCollection services)
     {
         services.AddFluentValidationAutoValidation();

@@ -21,10 +21,10 @@ public class ServiceEntity : BaseEntity
     private ServiceEntity(string name, string description, decimal price, TimeInMinutes duration, byte[]? image)
     {
         if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("Name cannot be null or empty.");
+            throw new AppException(message: "Nome não pode ser nulo ou vazio", code: "SERVICE_NAME", 400);
 
         if (string.IsNullOrWhiteSpace(description) || description.Length > 500)
-            throw new ArgumentException("Description cannot be null or empty.");
+            throw new AppException(message: "Descrição não pode ser nula ou vazia e não pode exceder 500 caracteres", code: "SERVICE_DESCRIPTION", 400);
 
         if (price <= 0)
             throw new NegativePriceException();
