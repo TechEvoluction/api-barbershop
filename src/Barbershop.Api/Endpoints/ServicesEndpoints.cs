@@ -1,4 +1,5 @@
-﻿using Barbershop.Shareable.Request;
+﻿using Barbershop.Api.Extensions;
+using Barbershop.Shareable.Request;
 using Barbershop.Shareable.Response;
 using MediatR;
 

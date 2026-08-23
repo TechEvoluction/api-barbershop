@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using Microsoft.OpenApi;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Barbershop.Api.Configuration;
 
@@ -6,8 +7,9 @@ namespace Barbershop.Api.Configuration;
 internal static class SwaggerConfiguration
 {
     private const string API_TITLE = "Barbershop.Api";
+    private const string SECURITY_SCHEME_NAME = "Bearer";
 
-    public static void AddSwaggerConfiguration(this IServiceCollection services)
+    public static IServiceCollection AddSwaggerConfiguration(this IServiceCollection services)
         => services.AddOpenApi(options =>
         {
             options.AddDocumentTransformer((document, context, cancellationToken) =>
@@ -15,6 +17,29 @@ internal static class SwaggerConfiguration
                 document.Info.Title = API_TITLE;
                 document.Info.Version = "v1";
                 document.Info.Description = "API de gerenciamento da barbearia";
+
+
+                document.Components ??= new OpenApiComponents();
+                document.Components.SecuritySchemes ??= new Dictionary<string, IOpenApiSecurityScheme>();
+                document.Components?.SecuritySchemes?[SECURITY_SCHEME_NAME] = new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Insert JWT token here"
+                };
+
+                document.Security =
+                [
+                    new OpenApiSecurityRequirement
+                    {
+                        [
+                            new OpenApiSecuritySchemeReference(SECURITY_SCHEME_NAME)
+                        ] = []
+                    }
+                ];
+
                 return Task.CompletedTask;
             });
         });

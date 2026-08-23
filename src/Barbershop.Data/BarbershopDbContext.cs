@@ -1,13 +1,21 @@
 ﻿using Barbershop.Domain.Entity;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Barbershop.Data;
 
-public class BarbershopDbContext(DbContextOptions<BarbershopDbContext> options)
-    : DbContext(options)
+public class BarbershopDbContext : IdentityDbContext//<IdentityUser<Guid>, IdentityRole<Guid>, Guid>
 {
+    public BarbershopDbContext(DbContextOptions<BarbershopDbContext> options)
+        : base(options) { }
+
     public DbSet<ServiceEntity> Service { get; set; } = default!;
+    public DbSet<UserEntity> User { get; set; } = default!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
-        => modelBuilder.ApplyConfigurationsFromAssembly(typeof(BarbershopDbContext).Assembly);
+    {
+        base.OnModelCreating(modelBuilder);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(BarbershopDbContext).Assembly);
+    }
 }

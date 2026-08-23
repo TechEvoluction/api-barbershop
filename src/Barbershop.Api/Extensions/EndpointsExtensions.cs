@@ -2,7 +2,7 @@
 using MediatR;
 using OperationResult;
 
-namespace Barbershop.Api.Endpoints;
+namespace Barbershop.Api.Extensions;
 
 internal static class EndpointExtensions
 {
