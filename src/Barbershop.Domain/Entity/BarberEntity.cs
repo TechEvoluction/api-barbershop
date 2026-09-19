@@ -21,5 +21,17 @@ public class BarberEntity : BaseEntity
     public static BarberEntity Create(string userId, string? biography = null)
         => new(userId, biography, true);
 
+    public BarberWorkdayEntity AddWorkday(DayOfWeek dayOfWeek, TimeOnly startTime, TimeOnly endTime, TimeOnly? lunchStarts, TimeOnly? lunchEnds)
+    {
+        var workday = new BarberWorkdayEntity(Id, dayOfWeek, startTime, endTime, lunchStarts, lunchEnds);
+
+        if (Workdays.Any(x => x.DayOfWeek == workday.DayOfWeek))
+            throw new ArgumentException("Workday already exists for this day of the week");
+
+        Workdays.Add(workday);
+
+        return workday;
+    }
+
     // method fechar agenda
 }

@@ -1,6 +1,7 @@
 ﻿using Barbershop.Domain.Contract.Repository;
 using Barbershop.Domain.Entity;
 using Barbershop.Shareable.Config;
+using Barbershop.Shareable.DTO;
 using Barbershop.Shareable.Exceptions;
 using Barbershop.Shareable.Request.Barber;
 using Barbershop.Shareable.Response;
@@ -12,7 +13,8 @@ namespace Barbershop.Domain.Handler;
 
 public class BarberHandler
     : IRequestHandler<BarberInvitationRequest, Result<CreateBarberResponse>>,
-        IRequestHandler<AcceptBarberInvitationRequest, Result>
+        IRequestHandler<AcceptBarberInvitationRequest, Result>,
+        IRequestHandler<BarberWorksdayRequest, Result<BarberWorksdayResponse>>
 {
     private readonly UserManager<UserEntity> _userManager;
     private readonly IBarberRepository _barberRepository;
@@ -88,5 +90,75 @@ public class BarberHandler
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Success();
+    }
+
+    public async Task<Result<BarberWorksdayResponse>> Handle(BarberWorksdayRequest request, CancellationToken cancellationToken)
+    {
+        if (request.Workdays is null || request.Workdays.Count < 1)
+            return new AppException("No workdays provided", "NO_WORKDAYS_PROVIDED", 400);
+
+        var barber = await _barberRepository.GetByIdForUpdateAsync(request.BarberId, cancellationToken);
+
+        if (barber is null)
+            return new NotFoundException("Barber");
+
+        var registeredWorkdays = barber.Workdays;
+        var scheduledWorkdays = request.Workdays.OrderBy(x => x.DayOfWeek).ToList();
+        List<WorkdayStatusDTO> workdaysResponse = [];
+
+        foreach (var workday in scheduledWorkdays)
+        {
+            var workdayResponse = new WorkdayStatusDTO
+            {
+                DayOfWeek = workday.DayOfWeek,
+                StartTime = workday.StartTime,
+                EndTime = workday.EndTime,
+                LunchStarts = workday.LunchStarts,
+                LunchEnds = workday.LunchEnds
+            };
+
+            var workload = (workday.EndTime - workday.StartTime).TotalHours;
+
+            if (workload > 9)
+            {
+                workdaysResponse.Add(workdayResponse with { MessageStatus = "Workday cannot exceed 8 hours" });
+                continue;
+            }
+
+            if (workload > 8
+                && (workday.LunchStarts is null || workday.LunchEnds is null))
+            {
+                workdaysResponse.Add(workdayResponse with { MessageStatus = "An 8-hour workday must include a lunch break" });
+                continue;
+            }
+
+            var workdayRegistered = registeredWorkdays
+                .FirstOrDefault(x => x.DayOfWeek == workday.DayOfWeek);
+
+            if (workdayRegistered is not null)
+            {
+                workdayRegistered.UpdateWorkload(
+                    workday.StartTime,
+                    workday.EndTime,
+                    workday.LunchStarts,
+                    workday.LunchEnds);
+
+                _barberRepository.Update(workdayRegistered);
+
+                workdaysResponse.Add(workdayResponse with { MessageStatus = $"Updated {workday.DayOfWeek} workload" });
+
+                continue;
+            }
+
+            var workdayEntity = barber.AddWorkday(workday.DayOfWeek, workday.StartTime, workday.EndTime, workday.LunchStarts, workday.LunchEnds);
+
+            _barberRepository.Add(workdayEntity);
+
+            workdaysResponse.Add(workdayResponse with { MessageStatus = "Successfully registered" });
+        }
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return new BarberWorksdayResponse(workdaysResponse);
     }
 }

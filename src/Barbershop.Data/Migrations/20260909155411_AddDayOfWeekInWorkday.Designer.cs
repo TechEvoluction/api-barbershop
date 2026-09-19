@@ -3,6 +3,7 @@ using System;
 using Barbershop.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Barbershop.Data.Migrations
 {
     [DbContext(typeof(BarbershopDbContext))]
-    partial class BarbershopDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260909155411_AddDayOfWeekInWorkday")]
+    partial class AddDayOfWeekInWorkday
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

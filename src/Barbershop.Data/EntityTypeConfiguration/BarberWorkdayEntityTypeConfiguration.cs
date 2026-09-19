@@ -15,6 +15,10 @@ internal class BarberWorkdayEntityTypeConfiguration : BaseEntityTypeConfiguratio
             .IsRequired()
             .HasComment("Identificador do barbeiro");
 
+        builder.Property(x => x.DayOfWeek)
+            .IsRequired()
+            .HasComment("Dia da semana de trabalho do barbeiro");
+
         builder.Property(x => x.StartTime)
             .IsRequired()
             .HasComment("Hora de início de trabalho do barbeiro");
@@ -24,11 +28,9 @@ internal class BarberWorkdayEntityTypeConfiguration : BaseEntityTypeConfiguratio
             .HasComment("Hora de término de trabalho do barbeiro");
 
         builder.Property(x => x.LunchStarts)
-            .IsRequired()
             .HasComment("Hora de início do intervalo de almoço do barbeiro");
 
         builder.Property(x => x.LunchEnds)
-            .IsRequired()
             .HasComment("Hora de término do intervalo de almoço do barbeiro");
 
         builder.HasOne(x => x.Barber)
