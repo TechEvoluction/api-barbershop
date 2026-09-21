@@ -2,7 +2,7 @@
 
 public class BarberWorkdayEntity : BaseEntity
 {
-    public Guid BarberId { get; }
+    public string BarberId { get; }
     public BarberEntity Barber { get; } = default!;
     public DayOfWeek DayOfWeek { get; private set; }
     public TimeOnly StartTime { get; private set; }
@@ -10,7 +10,7 @@ public class BarberWorkdayEntity : BaseEntity
     public TimeOnly? LunchStarts { get; private set; }
     public TimeOnly? LunchEnds { get; private set; }
 
-    internal BarberWorkdayEntity(Guid barberId, DayOfWeek dayOfWeek, TimeOnly startTime, TimeOnly endTime, TimeOnly? lunchStarts, TimeOnly? lunchEnds)
+    internal BarberWorkdayEntity(string barberId, DayOfWeek dayOfWeek, TimeOnly startTime, TimeOnly endTime, TimeOnly? lunchStarts, TimeOnly? lunchEnds)
     {
         BarberId = barberId;
         DayOfWeek = dayOfWeek;

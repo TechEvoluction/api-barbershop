@@ -36,6 +36,7 @@ internal class BarberWorkdayEntityTypeConfiguration : BaseEntityTypeConfiguratio
         builder.HasOne(x => x.Barber)
             .WithMany(x => x.Workdays)
             .HasForeignKey(x => x.BarberId)
+            .HasPrincipalKey(x => x.UserId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

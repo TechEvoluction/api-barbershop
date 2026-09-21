@@ -37,7 +37,7 @@ internal class SchedulingEntityTypeConfiguration : BaseEntityTypeConfiguration<S
 
         builder.Property(x => x.Observation)
             .HasComment("Observações do cliente sobre o agendamento");
-
+        
         builder.Property(x => x.Price)
             .IsRequired()
             .HasColumnType("decimal(18,2)")
@@ -46,11 +46,18 @@ internal class SchedulingEntityTypeConfiguration : BaseEntityTypeConfiguration<S
         builder.HasOne(x => x.Barber)
             .WithMany(x => x.Schedules)
             .HasForeignKey(x => x.BarberId)
+            .HasPrincipalKey(x => x.UserId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(x => x.User)
             .WithMany(x => x.Schedules)
             .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(x => x.Service)
+            .WithMany(x => x.Schedules)
+            .HasForeignKey(x => x.ServiceId)
+            .HasPrincipalKey(x => x.Id)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

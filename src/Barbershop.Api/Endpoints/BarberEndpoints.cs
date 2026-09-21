@@ -3,6 +3,7 @@ using Barbershop.Shareable.Config;
 using Barbershop.Shareable.Request.Barber;
 using Barbershop.Shareable.Response;
 using MediatR;
+using System.Security.Claims;
 
 namespace Barbershop.Api.Endpoints;
 
@@ -28,7 +29,11 @@ internal static class BarberEndpoints
             .WithSummary("Gerencia os dias de trabalho do barbeiro")
             .RequireAuthorization(policy => policy.RequireRole(Roles.Admin));
 
-        // bloquear agenda
+        api.MapPost("block-schedule", async (IMediator mediator, ClaimsPrincipal user, BlockScheduleRequest req) => await mediator.SendCommand(req with { BarberId = user.GetUserId() }))
+            .Produces(StatusCodes.Status200OK)
+            .WithSummary("Bloqueia a agenda do barbeiro")
+            .RequireAuthorization(policy => policy.RequireRole(Roles.Barber));
+
         // recusar/reagendar agendamento
     }
 }

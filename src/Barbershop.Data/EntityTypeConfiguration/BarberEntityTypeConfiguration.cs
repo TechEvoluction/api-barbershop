@@ -29,11 +29,13 @@ internal class BarberEntityTypeConfiguration : BaseEntityTypeConfiguration<Barbe
         builder.HasMany(x => x.Workdays)
             .WithOne(x => x.Barber)
             .HasForeignKey(x => x.BarberId)
+            .HasPrincipalKey(x => x.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasMany(x => x.ScheduleBlocks)
             .WithOne(x => x.Barber)
             .HasForeignKey(x => x.BarberId)
+            .HasPrincipalKey(x => x.UserId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

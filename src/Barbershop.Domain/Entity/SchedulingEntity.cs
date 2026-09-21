@@ -10,7 +10,7 @@ public class SchedulingEntity : BaseEntity
     public DateOnly Date { get; private set; }
     public TimeOnly Hour { get; private set; }
     public SchedulingStatus Status { get; private set; }
-    public Guid BarberId { get; }
+    public string BarberId { get; }
     public BarberEntity Barber { get; init; } = default!;
     public string UserId { get; }
     public UserEntity User { get; init; } = default!;
@@ -19,7 +19,7 @@ public class SchedulingEntity : BaseEntity
     public string? Observation { get; private set; }
     public decimal Price { get; }
 
-    private SchedulingEntity(string userId, Guid barberId, DateOnly date, TimeOnly hour, SchedulingStatus status, Guid serviceId, string? observation, decimal price)
+    private SchedulingEntity(string userId, string barberId, DateOnly date, TimeOnly hour, SchedulingStatus status, Guid serviceId, string? observation, decimal price)
     {
         if (date < DateOnly.FromDateTime(DateTimeExtensions.BrazilDateTime()))
             throw new AppException("The scheduled date cannot be earlier than the current date.", "SCHEDULING_DATE", 400);
@@ -36,7 +36,7 @@ public class SchedulingEntity : BaseEntity
         Price = price;
     }
 
-    public static SchedulingEntity Create(string userId, Guid barberId, DateOnly date, TimeOnly hour, Guid serviceId, string? observation, decimal price)
+    public static SchedulingEntity Create(string userId, string barberId, DateOnly date, TimeOnly hour, Guid serviceId, string? observation, decimal price)
         => new(userId, barberId, date, hour, SchedulingStatus.CONFIRMED, serviceId, observation, price);
 
     public SchedulingEntity UpdateStatus(SchedulingStatus status)

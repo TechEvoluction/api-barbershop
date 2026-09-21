@@ -15,6 +15,9 @@ internal class BarberScheduleBlockEntityTypeConfiguration : BaseEntityTypeConfig
             .IsRequired()
             .HasComment("Identificador do barbeiro");
 
+        builder.Property(x => x.Date)
+            .HasComment("Data da ausência do barbeiro");
+
         builder.Property(x => x.StartTime)
             .HasComment("Hora de início da ausência do barbeiro");
 
@@ -29,6 +32,7 @@ internal class BarberScheduleBlockEntityTypeConfiguration : BaseEntityTypeConfig
         builder.HasOne(x => x.Barber)
             .WithMany(x => x.ScheduleBlocks)
             .HasForeignKey(x => x.BarberId)
+            .HasPrincipalKey(x => x.UserId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }
