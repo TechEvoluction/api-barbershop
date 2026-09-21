@@ -17,6 +17,7 @@ public class ServiceEntity : BaseEntity
     public decimal DiscountPercentage => PromotionalPrice.HasValue ? (Price - PromotionalPrice.Value) / Price * 100 : 0m;
     public bool IsPromotional => PromotionalPrice.HasValue && PromotionalPriceEndDate!.Value > DateTime.UtcNow;
     public DateTime PromotionalDeadline { get; } = DateTime.UtcNow.AddHours(-3).AddDays(90);
+    public List<SchedulingEntity> Schedules { get; } = [];
 
     private ServiceEntity(string name, string description, decimal price, TimeInMinutes duration, byte[]? image)
     {

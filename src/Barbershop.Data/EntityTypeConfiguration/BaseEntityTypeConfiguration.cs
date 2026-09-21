@@ -12,6 +12,8 @@ internal class BaseEntityTypeConfiguration<TEntity> : IEntityTypeConfiguration<T
         builder.HasKey(e => e.Id);
 
         builder.Property(e => e.Id)
+            .ValueGeneratedOnAdd()
+            .HasDefaultValueSql("gen_random_uuid()")
             .HasComment("Identificador único da entidade");
 
         builder.Property(e => e.CreatedAt)

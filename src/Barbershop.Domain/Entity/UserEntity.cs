@@ -1,5 +1,6 @@
 ﻿using Barbershop.Shareable.Enum;
 using Barbershop.Shareable.Request.Auth;
+using Barbershop.Shareable.Request.Barber;
 using Microsoft.AspNetCore.Identity;
 
 namespace Barbershop.Domain.Entity;
@@ -12,8 +13,21 @@ public class UserEntity : IdentityUser
     public Gender? Gender { get; private set; }
     public bool IsActive { get; private set; } = true;
     public int Age => DateTime.UtcNow.AddHours(-3).Year - DateOfBirth.Year;
+    public SchedulingEntity[] Schedules { get; private set; } = [];
 
     public static UserEntity Create(RegisterUserRequest request)
+        => new()
+        {
+            Email = request.Email,
+            UserName = request.Email,
+            CPF = request.Cpf,
+            Fullname = request.Fullname,
+            DateOfBirth = request.DateOfBirth,
+            Gender = request.Gender,
+            PhoneNumber = request.PhoneNumber
+        };
+
+    public static UserEntity Create(BarberInvitationRequest request)
         => new()
         {
             Email = request.Email,

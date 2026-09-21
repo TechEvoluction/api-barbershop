@@ -2,6 +2,7 @@
 using Barbershop.Domain.Entity;
 using Barbershop.Shareable.Config;
 using Microsoft.IdentityModel.Tokens;
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -28,9 +29,14 @@ public class TokenService : ITokenService
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
-        foreach (var scope in _config.Scopes)
-            if (roles.Contains(Roles.Customer) && !scope.Contains("management"))
-                claims.Add(new("scopes", scope));
+        var scopes = roles.Contains(Roles.Customer)
+            ? _config.Scopes.Where(s => !s.Contains("management"))
+            : (roles.Contains(Roles.Barber) || roles.Contains(Roles.Admin))
+                ? _config.Scopes
+                : Enumerable.Empty<string>();
+        
+        foreach (var scope in scopes)
+            claims.Add(new("scopes", scope));
 
         foreach (var role in roles)
             claims.Add(new(ClaimTypes.Role, role));

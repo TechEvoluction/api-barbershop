@@ -10,5 +10,6 @@ internal static class EndpointsConfiguration
 
         apiGroup.MapServiceEndpoint();
         apiGroup.MapAuthEndpoint();
+        apiGroup.MapBarberEndpoint();
     }
 }

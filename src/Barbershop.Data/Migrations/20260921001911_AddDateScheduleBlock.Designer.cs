@@ -3,6 +3,7 @@ using System;
 using Barbershop.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Barbershop.Data.Migrations
 {
     [DbContext(typeof(BarbershopDbContext))]
-    partial class BarbershopDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260921001911_AddDateScheduleBlock")]
+    partial class AddDateScheduleBlock
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -27,7 +30,6 @@ namespace Barbershop.Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
-                        .HasDefaultValueSql("gen_random_uuid()")
                         .HasComment("Identificador único da entidade");
 
                     b.Property<bool>("AvailableToAssist")
@@ -61,12 +63,10 @@ namespace Barbershop.Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
-                        .HasDefaultValueSql("gen_random_uuid()")
                         .HasComment("Identificador único da entidade");
 
-                    b.Property<string>("BarberId")
-                        .IsRequired()
-                        .HasColumnType("text")
+                    b.Property<Guid>("BarberId")
+                        .HasColumnType("uuid")
                         .HasComment("Identificador do barbeiro");
 
                     b.Property<DateTime>("CreatedAt")
@@ -107,12 +107,10 @@ namespace Barbershop.Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
-                        .HasDefaultValueSql("gen_random_uuid()")
                         .HasComment("Identificador único da entidade");
 
-                    b.Property<string>("BarberId")
-                        .IsRequired()
-                        .HasColumnType("text")
+                    b.Property<Guid>("BarberId")
+                        .HasColumnType("uuid")
                         .HasComment("Identificador do barbeiro");
 
                     b.Property<DateTime>("CreatedAt")
@@ -155,7 +153,6 @@ namespace Barbershop.Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
-                        .HasDefaultValueSql("gen_random_uuid()")
                         .HasComment("Identificador único da entidade");
 
                     b.Property<TimeOnly>("ClosingTime")
@@ -188,12 +185,10 @@ namespace Barbershop.Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
-                        .HasDefaultValueSql("gen_random_uuid()")
                         .HasComment("Identificador único da entidade");
 
-                    b.Property<string>("BarberId")
-                        .IsRequired()
-                        .HasColumnType("text")
+                    b.Property<Guid>("BarberId")
+                        .HasColumnType("uuid")
                         .HasComment("Identificador do barbeiro");
 
                     b.Property<DateTime>("CreatedAt")
@@ -249,7 +244,6 @@ namespace Barbershop.Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
-                        .HasDefaultValueSql("gen_random_uuid()")
                         .HasComment("Identificador único da entidade");
 
                     b.Property<DateTime>("CreatedAt")
@@ -537,7 +531,6 @@ namespace Barbershop.Data.Migrations
                     b.HasOne("Barbershop.Domain.Entity.BarberEntity", "Barber")
                         .WithMany("ScheduleBlocks")
                         .HasForeignKey("BarberId")
-                        .HasPrincipalKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -549,7 +542,6 @@ namespace Barbershop.Data.Migrations
                     b.HasOne("Barbershop.Domain.Entity.BarberEntity", "Barber")
                         .WithMany("Workdays")
                         .HasForeignKey("BarberId")
-                        .HasPrincipalKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -561,14 +553,13 @@ namespace Barbershop.Data.Migrations
                     b.HasOne("Barbershop.Domain.Entity.BarberEntity", "Barber")
                         .WithMany("Schedules")
                         .HasForeignKey("BarberId")
-                        .HasPrincipalKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Barbershop.Domain.Entity.ServiceEntity", "Service")
-                        .WithMany("Schedules")
+                        .WithMany()
                         .HasForeignKey("ServiceId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Barbershop.Domain.Entity.UserEntity", "User")
@@ -642,11 +633,6 @@ namespace Barbershop.Data.Migrations
                     b.Navigation("Schedules");
 
                     b.Navigation("Workdays");
-                });
-
-            modelBuilder.Entity("Barbershop.Domain.Entity.ServiceEntity", b =>
-                {
-                    b.Navigation("Schedules");
                 });
 
             modelBuilder.Entity("Barbershop.Domain.Entity.UserEntity", b =>
