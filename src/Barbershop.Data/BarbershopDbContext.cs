@@ -1,5 +1,4 @@
 ﻿using Barbershop.Domain.Entity;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +11,7 @@ public class BarbershopDbContext : IdentityDbContext//<IdentityUser<Guid>, Ident
 
     public DbSet<ServiceEntity> Service { get; set; } = default!;
     public DbSet<UserEntity> User { get; set; } = default!;
+    public DbSet<BarberEntity> Barber { get; set; } = default!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
