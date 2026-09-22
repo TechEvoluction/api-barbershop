@@ -2,7 +2,7 @@
 
 namespace Barbershop.Shareable.DTO;
 
-public record WorkdayStatusDTO : WorkdayDTO
+public record OperationStatusDTO : OperationDTO
 {
     public string MessageStatus { get; set; } = string.Empty;
     public ProcessingStatus Status { get; init; }

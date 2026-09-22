@@ -8,8 +8,10 @@ internal static class EndpointsConfiguration
     {
         var apiGroup = app.MapGroup("/api");
 
-        apiGroup.MapServiceEndpoint();
         apiGroup.MapAuthEndpoint();
+        apiGroup.MapBarbershopEndpoint();
         apiGroup.MapBarberEndpoint();
+        apiGroup.MapServiceEndpoint();
+        apiGroup.MapScheduleEndpoint();
     }
 }

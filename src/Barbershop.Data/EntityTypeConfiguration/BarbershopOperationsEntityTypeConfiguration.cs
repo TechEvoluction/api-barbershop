@@ -19,7 +19,9 @@ internal class BarbershopOperationEntityTypeConfiguration : BaseEntityTypeConfig
             .HasComment("Hora de início da operação");
 
         builder.Property(x => x.ClosingTime)
-            .IsRequired()
             .HasComment("Hora de término da operação");
+
+        builder.Property(x => x.Date)
+            .HasComment("Data específica da operação");
     }
 }

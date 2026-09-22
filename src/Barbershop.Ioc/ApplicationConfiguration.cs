@@ -48,6 +48,7 @@ public static class ApplicationConfiguration
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IServiceRepository, ServiceRepository>();
         services.AddScoped<IBarberRepository, BarberRepository>();
+        services.AddScoped<IBarbershopRepository, BarbershopRepository>();
     }
 
     private static void ConfigurarExceptionHandler(this IServiceCollection services)

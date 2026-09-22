@@ -1,4 +1,5 @@
 ﻿using Barbershop.Shareable.DTO;
+using Barbershop.Shareable.Enum;
 using Barbershop.Shareable.Exceptions;
 
 namespace Barbershop.Domain.Entity;
@@ -60,21 +61,22 @@ public class BarberEntity : BaseEntity
                 StartTime = workday.StartTime,
                 EndTime = workday.EndTime,
                 LunchStarts = workday.LunchStarts,
-                LunchEnds = workday.LunchEnds
+                LunchEnds = workday.LunchEnds,
+                Status = ProcessingStatus.CREATED,
             };
 
             var workload = (workday.EndTime - workday.StartTime).TotalHours;
 
             if (workload > 9)
             {
-                workdaysResponse.Add(workdayResponse with { MessageStatus = "Workday cannot exceed 8 hours" });
+                workdaysResponse.Add(workdayResponse with { MessageStatus = "Workday cannot exceed 8 hours", Status = ProcessingStatus.ERROR });
                 continue;
             }
 
             if (workload > 8
                 && (workday.LunchStarts is null || workday.LunchEnds is null))
             {
-                workdaysResponse.Add(workdayResponse with { MessageStatus = "An 8-hour workday must include a lunch break" });
+                workdaysResponse.Add(workdayResponse with { MessageStatus = "An 8-hour workday must include a lunch break", Status = ProcessingStatus.ERROR });
                 continue;
             }
 
@@ -89,7 +91,7 @@ public class BarberEntity : BaseEntity
                     workday.LunchStarts,
                     workday.LunchEnds);
 
-                workdaysResponse.Add(workdayResponse with { MessageStatus = $"Updated {workday.DayOfWeek} workload" });
+                workdaysResponse.Add(workdayResponse with { MessageStatus = $"Updated {workday.DayOfWeek} workload", Status = ProcessingStatus.UPDATED });
                 continue;
             }
 
